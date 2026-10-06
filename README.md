@@ -1,58 +1,122 @@
-# Despliegue de Flask y análisis de datos sobre Alpine Linux
+# Automated Flask Deployment on Alpine Linux
 
-Proyecto académico de **Miguel Pajuelo Gómez y Jorge Ois de Pascual** para Fundamentos de los Sistemas Operativos, ICAI, Universidad Pontificia Comillas.
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![Alpine Linux](https://img.shields.io/badge/Alpine_Linux-0D597F?logo=alpinelinux&logoColor=white)
+![Bash](https://img.shields.io/badge/Bash-4EAA25?logo=gnubash&logoColor=white)
 
-Automatización del despliegue de una aplicación Flask en una máquina virtual Alpine Linux, procesamiento de check-ins de Gowalla y descarga de resultados de entrenamiento desde el ordenador anfitrión. El servidor de aprendizaje automático procede del [framework externo ProyectoFUSO](https://github.com/pablosanchezp/ProyectoFUSO); aquí se presentan los scripts de despliegue, procesamiento y comunicación y las evidencias de la entrega.
+**From a minimal Linux virtual machine to a running Flask service, a data-processing workflow and an automated HTTP client.**
 
-## Recorrido por el proyecto
+Academic project by **Miguel Pajuelo Gómez and Jorge Ois de Pascual** for *Fundamentos de los Sistemas Operativos*, ICAI, Universidad Pontificia Comillas. The coursework combines operating-system setup, shell automation, geospatial data processing and client/server communication.
 
-| Material | Función |
+The Flask/ML server is the external [ProyectoFUSO framework](https://github.com/pablosanchezp/ProyectoFUSO). This repository contains our deployment, processing and communication scripts, together with original submission evidence; authorship of the external framework remains with its creators.
+
+[Architecture](#architecture) · [Results](#original-results) · [Run the project](#run-the-project) · [Validation](#validation-and-scope) · [Report](documentacion/memoria.pdf)
+
+## What the project demonstrates
+
+- **Linux deployment:** preparing Alpine packages, cloning the server and creating a Python virtual environment.
+- **Shell data workflows:** processing Gowalla check-ins, computing descriptive statistics and selecting the most active users.
+- **HTTP automation:** submitting training requests and retrieving figures for nine train/test splits, with timeouts and exponential retries.
+- **Technical communication:** documenting the deployment and experiments in a [report](documentacion/memoria.pdf) and [poster](documentacion/poster.pdf).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph VM["Alpine Linux virtual machine"]
+        SETUP["Packages + Python environment"] --> SERVER["External ProyectoFUSO server"]
+        GOW["Gowalla check-ins"] --> PIPE["Bash + Python processing"]
+        PIPE --> GEO["Statistics, top users and maps"]
+    end
+    CLIENT["Host computer: Python client"] -->|"POST /train"| SERVER
+    SERVER -->|"GET /static: result figures"| CLIENT
+    CLIENT --> FILES["Downloaded PNG results"]
+    classDef app fill:#dbeafe,stroke:#2563eb,color:#0f172a;
+    classDef data fill:#dcfce7,stroke:#16a34a,color:#0f172a;
+    class SETUP,SERVER,PIPE,CLIENT app;
+    class GOW,GEO,FILES data;
+```
+
+The Gowalla processing and Iris training requests are separate coursework workflows. The Iris model is **Random Forest**, supplied by the external server; it is not a model implemented by this repository.
+
+## Original results
+
+![Original Iris figure for a 70% training / 30% test split: actual and predicted class frequencies](resultados/irisTr0.7Tst0.3.png)
+
+*Historical output included in the submission. The bars compare actual and predicted class frequencies; matching totals alone do not establish prediction accuracy.*
+
+<details>
+<summary><strong>Compare three original train/test splits</strong></summary>
+
+| 30% train / 70% test | 50% train / 50% test | 90% train / 10% test |
+|:---:|:---:|:---:|
+| ![Iris: 30% training, 70% test](resultados/irisTr0.3Tst0.7.png) | ![Iris: 50% training, 50% test](resultados/irisTr0.5Tst0.5.png) | ![Iris: 90% training, 10% test](resultados/irisTr0.9Tst0.1.png) |
+
+All nine original figures are available in [resultados/](resultados/). They have not been regenerated for this README.
+
+</details>
+
+## Repository guide
+
+| Entry point | Purpose |
 |---|---|
-| `apartado1_MiguelPajuelo_JorgeOis.sh` | Instalación de paquetes en Alpine; ejecutar con permisos de administración. |
-| `apartado_despliegue_bash_MiguelPajuelo_JorgeOis.sh` | Descarga del framework externo, creación del entorno e inicio de Flask. |
-| `apartado3_MiguelPajuelo_JorgeOis.sh` | Procesamiento de Gowalla, estadísticas, selección de usuarios y mapas. |
-| `stats_checker_JorgeOis_MiguelPajuelo.py` | Usuarios, lugares, filas y check-ins de julio/agosto. |
-| `topn_selection_JorgeOis_MiguelPajuelo.py` | Selección de los usuarios con más check-ins. |
-| `apartado4_JorgeOis_MiguelPajuelo.py` | POST de entrenamiento y GET de figuras para nueve repartos train/test. |
-| [resultados/](resultados/) | Nueve figuras históricas de Iris incluidas en el material original. |
-| [Memoria](documentacion/memoria.pdf) y [póster](documentacion/poster.pdf) | Explicación y presentación del proyecto entregado. |
+| [Package setup](apartado1_MiguelPajuelo_JorgeOis.sh) | Historical Alpine package installation script. |
+| [Server deployment](apartado_despliegue_bash_MiguelPajuelo_JorgeOis.sh) | Clone the external framework, create `.venv` and start Flask. |
+| [Gowalla pipeline](apartado3_MiguelPajuelo_JorgeOis.sh) | Process city datasets, calculate statistics and generate maps. |
+| [Statistics](stats_checker_JorgeOis_MiguelPajuelo.py) / [Top-N selection](topn_selection_JorgeOis_MiguelPajuelo.py) | Analyse check-ins and rank users. |
+| [HTTP client](apartado4_JorgeOis_MiguelPajuelo.py) | Automate nine training requests and figure downloads. |
+| [Documentation](documentacion/) / [Results](resultados/) | Original academic deliverables and figures. |
 
-## Preparación en Alpine Linux
+## Run the project
 
-El despliegue requiere Alpine Linux, conectividad y los paquetes `python3`, `py3-pip`, `python3-dev`, `git`, `bash`, `gcc`, `g++`, `musl-dev`, `linux-headers`, `wget`, `curl` y `unzip`. Instalar el conjunto con `apk add` desde una sesión con los permisos adecuados. El script histórico del apartado 1 usa el nombre `pip`; en versiones de Alpine que lo empaqueten como `py3-pip`, usar ese nombre al instalar.
+### 1. Prepare the Alpine virtual machine
 
-Desde la carpeta del proyecto:
+From a shell with installation privileges:
+
+```sh
+apk add python3 py3-pip python3-dev git bash gcc g++ musl-dev linux-headers wget curl unzip
+```
+
+The historical package script uses the package name `pip`; current installations may require `py3-pip`, as above. From this repository's directory, start the server:
 
 ```sh
 sh apartado_despliegue_bash_MiguelPajuelo_JorgeOis.sh
 ```
 
-El servidor se clona en `ProyectoFUSO/` y el entorno se crea en `.venv/`. Ambos se excluyen de Git: el framework externo conserva su autoría y su propio historial. Consultar [PROCEDENCIA.md](PROCEDENCIA.md) para la referencia remota comprobada y los ajustes de portabilidad.
+The script creates `ProyectoFUSO/` and `.venv/`, both excluded from Git. See [PROCEDENCIA.md](PROCEDENCIA.md) for the external reference and portability adjustments. The server entry point and its dependencies belong to that external repository.
 
-Para procesar Gowalla, preparar la distribución docente con `ElPasoGowalla.txt`, `GlasgowGowalla.txt`, `ManchesterGowalla.txt` y `WashingtonDCGowalla.txt` dentro de `DatasetsGowalla/`, y tener el framework clonado:
+### 2. Run the host-side client
+
+On the host computer, create a Python environment, install `requests`, and set the VM's reachable IP. PowerShell example:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install requests
+$env:ALPINE_IP = "IP_OF_THE_ALPINE_VM"
+$env:FLASK_PORT = "5000"
+.\.venv\Scripts\python.exe apartado4_JorgeOis_MiguelPajuelo.py
+```
+
+For a POSIX shell, use `export ALPINE_IP=...` and `export FLASK_PORT=5000`. The VM must be reachable on that port. [.env.example](.env.example) documents the variables; it is not loaded automatically. New downloads go to `descargas_resultados_flask/`, separate from the historical `resultados/` figures.
+
+### 3. Process the Gowalla coursework data
+
+With the external framework cloned, prepare `ElPasoGowalla.txt`, `GlasgowGowalla.txt`, `ManchesterGowalla.txt` and `WashingtonDCGowalla.txt` inside `DatasetsGowalla/`, then run:
 
 ```sh
 bash apartado3_MiguelPajuelo_JorgeOis.sh
 ```
 
-El script conserva el enlace de Google Drive de la práctica y admite `GOWALLA_URL` como alternativa. No se ha comprobado la disponibilidad de ese enlace. El [dataset original de Gowalla en SNAP](https://snap.stanford.edu/data/loc-Gowalla.html) documenta el esquema usuario, fecha, latitud, longitud e identificador de lugar; el conjunto completo de SNAP necesita el filtrado por ciudades para reproducir esta distribución docente.
+The script retains the coursework Google Drive link and accepts `GOWALLA_URL` as an alternative. That link's availability has not been checked. [SNAP's original Gowalla dataset](https://snap.stanford.edu/data/loc-Gowalla.html) explains the user/time/latitude/longitude/place schema; reproducing the coursework files requires the appropriate city filtering.
 
-## Descarga desde el anfitrión
+## Validation and scope
 
-Crear un entorno Python e instalar `requests` en el ordenador que vaya a realizar las peticiones. Con Flask en marcha, indicar la IP de la máquina virtual y, si procede, el puerto. En PowerShell:
+| Checked locally during repository preparation | Requires the deployment environment |
+|---|---|
+| Syntax of all three shell scripts and the Python scripts. | Booting the Alpine VM and installing its packages. |
+| Statistics and Top-N selection with synthetic records. | Processing the complete coursework Gowalla data. |
+| Nine POST + nine GET requests against a local mock server. | Training through the real external Flask server. |
 
-```powershell
-$env:ALPINE_IP = "IP_DE_LA_MAQUINA_VIRTUAL"
-$env:FLASK_PORT = "5000"
-python apartado4_JorgeOis_MiguelPajuelo.py
-```
+The included report also discusses sequential/parallel execution. Historical figures and documentation are preserved as evidence, without claiming a new benchmark or a repeated VM deployment. VM images and submission ZIPs remain in the local coursework archive rather than this repository.
 
-En un shell POSIX, usar `export ALPINE_IP=...`. `.env.example` muestra los nombres de variables; no se carga automáticamente. Las nuevas descargas van a `descargas_resultados_flask/`; las evidencias originales están separadas en `resultados/`.
-
-## Resultados y límites
-
-![Resultado histórico de Iris: 70 % entrenamiento y 30 % prueba](resultados/irisTr0.7Tst0.3.png)
-
-La memoria documenta la instalación, las peticiones, los mapas y la comparación de ejecución secuencial/paralela. Estas imágenes son resultados previos; la preparación del repositorio no ha repetido los entrenamientos ni arrancado la máquina virtual. Las OVA y los ZIP se conservan en el archivo local de la asignatura y se excluyen de esta carpeta por tamaño y redundancia. El repositorio contiene el material para estudiar y preparar el despliegue; el funcionamiento completo requiere el entorno descrito.
-
-La validación del empaquetado está en [VALIDACION.md](VALIDACION.md).
+**Further reading:** [validation details](VALIDACION.md) · [provenance and changes](PROCEDENCIA.md) · [original report](documentacion/memoria.pdf).
