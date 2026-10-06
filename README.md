@@ -21,21 +21,7 @@ The Flask/ML server is the external [ProyectoFUSO framework](https://github.com/
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph VM["Alpine Linux virtual machine"]
-        SETUP["Packages + Python environment"] --> SERVER["External ProyectoFUSO server"]
-        GOW["Gowalla check-ins"] --> PIPE["Bash + Python processing"]
-        PIPE --> GEO["Statistics, top users and maps"]
-    end
-    CLIENT["Host computer: Python client"] -->|"POST /train"| SERVER
-    SERVER -->|"GET /static: result figures"| CLIENT
-    CLIENT --> FILES["Downloaded PNG results"]
-    classDef app fill:#dbeafe,stroke:#2563eb,color:#0f172a;
-    classDef data fill:#dcfce7,stroke:#16a34a,color:#0f172a;
-    class SETUP,SERVER,PIPE,CLIENT app;
-    class GOW,GEO,FILES data;
-```
+![Alpine Linux deployment, Gowalla processing and HTTP client architecture](.codex/visuals/architecture.png)
 
 The Gowalla processing and Iris training requests are separate coursework workflows. The Iris model is **Random Forest**, supplied by the external server; it is not a model implemented by this repository.
 
