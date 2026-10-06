@@ -1,0 +1,26 @@
+[
+  {
+    "repo": "FUSO/FUSO_GitHub",
+    "file": ".codex/visuals/usage_service_catalog.jpg",
+    "origin": "documentacion/memoria.pdf, page 3, original service-catalog screenshot",
+    "sha256": "3a61ce1fce9fac22fc82fbba0d9830f9aaba759705bb40ee026ebe114ce99274"
+  },
+  {
+    "repo": "FUSO/FUSO_GitHub",
+    "file": ".codex/visuals/usage_gowalla_map.jpg",
+    "origin": "documentacion/memoria.pdf, page 5, original Glasgow map screenshot",
+    "sha256": "bfdad6fbb5638985942d58fd4530c0886bf5dc5f9226e363efbe01e095acdb87"
+  },
+  {
+    "repo": "FUSO/FUSO_GitHub",
+    "file": ".codex/visuals/usage_sequential_cpu.png",
+    "origin": "documentacion/memoria.pdf, page 4, original sequential-execution monitoring",
+    "sha256": "6b66751be4585e94d876b93ce255c3354b00220088aa6db5bf2515123a0c3aa2"
+  },
+  {
+    "repo": "FUSO/FUSO_GitHub",
+    "file": ".codex/visuals/usage_parallel_cpu.jpg",
+    "origin": "documentacion/memoria.pdf, page 4, original parallel-execution monitoring",
+    "sha256": "8b127bd967677944a7f163be746235399f0e2d500bdf8c34135e7605d4b01d60"
+  }
+]

@@ -10,7 +10,44 @@ Academic project by **Miguel Pajuelo Gómez and Jorge Ois de Pascual** for *Fund
 
 The Flask/ML server is the external [ProyectoFUSO framework](https://github.com/pablosanchezp/ProyectoFUSO). This repository contains our deployment, processing and communication scripts, together with original submission evidence; authorship of the external framework remains with its creators.
 
-[Architecture](#architecture) · [Results](#original-results) · [Run the project](#run-the-project) · [Validation](#validation-and-scope) · [Report](documentacion/memoria.pdf)
+[Usage examples](#the-project-in-use) · [Architecture](#architecture) · [Results](#original-results) · [Run the project](#run-the-project) · [Validation](#validation-and-scope) · [Report](documentacion/memoria.pdf)
+
+## The project in use
+
+The practical goal is to make a minimal Alpine VM usable as a remote application server, then use its services to explore data and retrieve experiment outputs.
+
+| User task | What happens | Visible outcome |
+|---|---|---|
+| Start the service and open its URL from the host. | The deployed external Flask framework exposes its service catalogue. | A web page with training, statistics, maps and execution-comparison services. |
+| Process city check-ins and inspect the generated HTML. | Coursework scripts prepare Gowalla data for the framework's mapping tools. | A geographical view of user check-ins and movements. |
+| Run the Python request client. | Nine train/test configurations are submitted, then their figures are downloaded. | A folder of Iris result figures. |
+
+### Web service catalogue
+
+![Original screenshot of the deployed Flask service catalogue](.codex/visuals/usage_service_catalog.jpg)
+
+*Original screenshot from the [report, page 3](documentacion/memoria.pdf). This is the external framework's interface as used in the coursework, not a newly designed UI.*
+
+### Gowalla map output
+
+![Original Glasgow map displaying Gowalla check-ins and user movements](.codex/visuals/usage_gowalla_map.jpg)
+
+*Original map from the [report, page 5](documentacion/memoria.pdf): Glasgow check-ins and user movements. The image was extracted unchanged. Basemap attribution: [OpenStreetMap contributors](https://www.openstreetmap.org/copyright).*
+
+<details>
+<summary><strong>Original CPU monitoring during sequential and parallel execution</strong></summary>
+
+**Sequential execution**
+
+![Original CPU monitor during the sequential coursework execution](.codex/visuals/usage_sequential_cpu.png)
+
+**Parallel execution**
+
+![Original CPU monitor during the parallel coursework execution](.codex/visuals/usage_parallel_cpu.jpg)
+
+These are historical screenshots from the [report, page 4](documentacion/memoria.pdf). They illustrate the execution-comparison experiment discussed in that report; they are not a new performance benchmark or evidence that the current deployment has been rerun.
+
+</details>
 
 ## What the project demonstrates
 
